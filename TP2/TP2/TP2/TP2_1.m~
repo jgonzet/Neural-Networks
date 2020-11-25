@@ -1,0 +1,68 @@
+%         TP2 : Perceptron 
+%         Red Neuronal capaz de apreder AND y OR             
+clear all,close all
+
+%  in.AND2bit    out.AND2bit
+%  in.AND4bit    out.AND4bit
+%  in.OR2bit     out.OR2bit
+%  in.OR2bit     out.OR2bit
+
+X2 = [-1 -1             1;              % Entrada de 2 bits
+      -1  1             1;
+       1 -1             1;
+       1  1             1 ];          
+   
+X4 = [-1 -1 -1 -1       1;              % Entrada de 4 bits
+      -1 -1 -1  1       1;
+      -1 -1  1 -1       1;
+      -1 -1  1  1       1;
+      -1  1 -1 -1       1;
+      -1  1 -1  1       1;
+      -1  1  1 -1       1;
+      -1  1  1  1       1;
+       1 -1 -1 -1       1;
+       1 -1 -1  1       1;
+       1 -1  1 -1       1;
+       1 -1  1  1       1;
+       1  1 -1 -1       1;
+       1  1 -1  1       1;
+       1  1  1 -1       1;
+       1  1  1  1       1 ];
+
+% salidas deseadas:
+yd2and = [-1 -1 -1  1];  % AND
+yd2or  = [-1 -1 -1  1];  % OR
+yd4and = [-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1  1];  % AND
+yd4or  = [-1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1];  % OR
+% --
+x = X4;         % elijo tipo de entrada de 2 o 4 bits
+yd = yd4or;     % elijo tipo de salida AND u OR de 2 o 4 bits
+eta = 1;        % Coeficiente de aprendisaje 
+
+% --
+[y,W] = perceptronSimple(x, yd, eta);
+
+[tamout,tamin]  = size(x);
+y  = zeros(1,length(yd));  
+W  = rand (1,tamin);
+dW = zeros(1,tamin);
+
+while(isequal(y,yd) ~= 1)   % Hasta que y == yd
+    perm = randperm(tamout);
+    for j = 1:tamout;
+        i = perm(j);    % indice aleatorio
+        entradas_i = x(i,:)';
+        salida_i = signNeu(W*entradas_i);
+        y(i) = salida_i;
+        err = (yd(i) - y(i));
+        dW = eta*err*x(i,:);
+        W = W + dW;
+    end       
+end
+
+subplot(2,1,1)
+stem(yd), title('Salida DESEADA'  ), ylim([-2 2])
+subplot(2,1,2)
+stem(y),  title('Salida APRENDIDA'), ylim([-2 2])
+
+
